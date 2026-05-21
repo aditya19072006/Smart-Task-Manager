@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Task Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+
+    <section class="auth-overlay" id="authOverlay">
+      <div class="mesh-backdrop"></div>
+      <div class="auth-panel">
+        <div class="auth-brand">
+          <div class="brand-mark"><i class="fa-solid fa-square-check"></i></div>
+          <div>
+            <h1>Smart Task Manager</h1>
+            <p>Plan tasks, track focus, and collaborate smarter.</p>
+          </div>
+        </div>
+
+        <div class="auth-switch">
+          <button class="tab active" data-auth-tab="signin">Sign In</button>
+          <button class="tab" data-auth-tab="signup">Create Account</button>
+        </div>
+
+        <div class="auth-card active" data-auth-card="signin">
+          <div class="field-grid">
+            <div class="floating-label-group">
+              <input type="email" id="signinEmail" placeholder=" " required>
+              <label for="signinEmail">Email Address</label>
+            </div>
+            <div class="floating-label-group">
+              <input type="password" id="signinPassword" placeholder=" " required>
+              <label for="signinPassword">Password</label>
+            </div>
+          </div>
+          <div class="auth-actions">
+            <button class="btn btn-primary" id="signinBtn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</button>
+            <button class="btn btn-ghost oauth-btn" data-provider="google"><i class="fa-brands fa-google"></i> Continue with Google</button>
+            <button class="btn btn-ghost oauth-btn" data-provider="github"><i class="fa-brands fa-github"></i> Continue with GitHub</button>
+          </div>
+        </div>
+
+        <div class="auth-card" data-auth-card="signup">
+          <div class="field-grid">
+            <div class="floating-label-group">
+              <input type="text" id="signupName" placeholder=" " required>
+              <label for="signupName">Full Name</label>
+            </div>
+            <div class="floating-label-group">
+              <input type="email" id="signupEmail" placeholder=" " required>
+              <label for="signupEmail">Email Address</label>
+            </div>
+            <div class="floating-label-group">
+              <input type="password" id="signupPassword" placeholder=" " required>
+              <label for="signupPassword">Password</label>
+            </div>
+          </div>
+          <div class="auth-actions">
+            <button class="btn btn-primary" id="signupBtn"><i class="fa-solid fa-user-plus"></i> Create Account</button>
+            <button class="btn btn-ghost oauth-btn" data-provider="google"><i class="fa-brands fa-google"></i> Continue with Google</button>
+            <button class="btn btn-ghost oauth-btn" data-provider="github"><i class="fa-brands fa-github"></i> Continue with GitHub</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="brand-row">
+        <div class="brand-mark"><i class="fa-solid fa-square-check"></i></div>
+        <div>
+          <strong>Smart Task Manager</strong>
+          <span>Workspace</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-link active" data-view="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+        <button class="nav-link" data-view="tasks"><i class="fa-solid fa-list-check"></i> Tasks</button>
+        <button class="nav-link" data-view="analytics"><i class="fa-solid fa-chart-column"></i> Analytics</button>
+        <button class="nav-link" data-view="team"><i class="fa-solid fa-people-group"></i> Team</button>
+        <button class="nav-link" data-view="chat"><i class="fa-solid fa-message"></i> AI Chat Workspace</button>
+      </nav>
+
+      <div class="focus-mini-card">
+        <div class="mini-head">
+          <span>Focus Clock</span>
+          <small id="sidebarFocusLabel">25:00</small>
+        </div>
+        <div class="mini-controls">
+          <button class="mini-btn" id="focusMinus">-5</button>
+          <button class="mini-btn" id="focusToggle">Start</button>
+          <button class="mini-btn" id="focusPlus">+5</button>
+        </div>
+        <button class="btn btn-primary start-focus-mode-btn" id="startFocusModeBtn" style="width: 100%; margin-top: 0.75rem;"><i class="fa-solid fa-expand"></i> Start Focus Mode</button>
+      </div>
+
+      <button class="btn btn-danger logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </aside>
+
+    <main class="main-wrap">
+      <div class="deadline-alert" id="deadlineAlert">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="deadlineText">No urgent deadlines right now.</span>
+      </div>
+
+      <header class="topbar">
+        <div class="quote-feed">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span id="quoteText">Small wins build big momentum.</span>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-primary start-focus-mode-btn" id="topbarFocusModeBtn" title="Enter Focus Mode"><i class="fa-solid fa-expand"></i> Start Focus Mode</button>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <i class="fa-solid fa-sun"></i>
+            <i class="fa-solid fa-moon"></i>
+          </button>
+
+          <div class="profile-chip" id="profileChip">
+            <span id="profileInitials">ST</span>
+          </div>
+
+          <div class="profile-dropdown hidden" id="profileDropdown">
+            <div class="profile-row">
+              <strong id="profileName">Guest User</strong>
+              <small id="profileEmail">guest@smarttaskmanager.app</small>
+            </div>
+            <button class="dropdown-action" id="editProfileBtn"><i class="fa-solid fa-pen"></i> Update Profile</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <div class="view-pane" id="dashboardView">
+          <div class="metrics-grid">
+            <article class="metric-card"><span>Total</span><strong id="metricTotal">0</strong></article>
+            <article class="metric-card"><span>Pending</span><strong id="metricPending">0</strong></article>
+            <article class="metric-card"><span>Completed</span><strong id="metricCompleted">0</strong></article>
+            <article class="metric-card"><span>Overdue</span><strong id="metricOverdue">0</strong></article>
+          </div>
+
+          <div class="split-grid">
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Quick Project Feed</h2>
+                <small>Latest updates</small>
+              </div>
+              <div class="quick-feed" id="quickFeed"></div>
+            </section>
+
+            <section class="panel score-matrix-card">
+              <div class="panel-head">
+                <h2>Quest Academy Scoreboard</h2>
+                <small id="tierLabel">Bronze Tier</small>
+              </div>
+              <div class="score-tier">
+                <div class="tier-stack" id="tierStack">
+                  <span>Bronze</span><span>Silver</span><span>Gold</span><span>Platinum</span>
+                </div>
+                <div class="xp-ring">
+                  <div class="xp-ring-inner">
+                    <strong id="xpTotal">0 XP</strong>
+                    <small id="dayStreak">Day Streak: 0</small>
+                  </div>
+                </div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-track"><div class="progress-fill" id="xpProgress"></div></div>
+                <div class="progress-meta"><span>Level progress</span><span id="xpPercent">0%</span></div>
+              </div>
+            </section>
+          </div>
+
+          <div class="dashboard-bottom">
+            <section class="panel donut-panel">
+              <div class="panel-head">
+                <h2>Project Metric Gauge</h2>
+                <small>Completion ratio</small>
+              </div>
+              <div class="donut-gauge" id="donutGauge">
+                <div class="donut-hole">
+                  <strong id="donutPercent">0%</strong>
+                  <span>Done</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h2>Goal Notes</h2>
+                <small>Sticky bullets</small>
+              </div>
+              <div class="goal-notes" id="goalNotes"></div>
+            </section>
+          </div>
+        </div>
+
+        <div class="view-pane hidden" id="tasksView">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>My Tasks</h2>
+                <small>Your personal workspace</small>
+              </div>
+              <button class="btn btn-primary" id="openTaskModalBtn"><i class="fa-solid fa-plus"></i> Add Task</button>
+            </div>
+            <div class="filter-tabs" id="taskFilters" style="margin-top:1rem">
+              <button class="tab active" data-filter="all">All</button>
+              <button class="tab" data-filter="pending">Pending</button>
+              <button class="tab" data-filter="completed">Completed</button>
+              <button class="tab" data-filter="overdue">Overdue</button>
+            </div>
+            <div class="task-feed" id="taskFeed"></div>
+          </section>
+        </div>
+
+        <div class="view-pane hidden" id="analyticsView">
+          <section class="panel">
+            <div class="panel-head">
+              <h2>7-Day Activity</h2>
+              <small>Performance snapshot</small>
+            </div>
+            <div class="activity-chart" id="activityChart"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Productivity Efficiency</h2>
+              <small>Focus-weighted score</small>
+            </div>
+            <div class="efficiency-node">
+              <div class="efficiency-circle" id="efficiencyCircle">
+                <strong id="efficiencyValue">0</strong>
+                <span>Efficiency</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="view-pane hidden" id="teamView">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Team Collaboration</h2>
+                <small>Shared assignments</small>
+              </div>
+              <button class="btn btn-primary" id="addTeamBtn"><i class="fa-solid fa-user-plus"></i> Add Team Member</button>
+            </div>
+            <div class="task-feed" id="teamFeed"></div>
+          </section>
+        </div>
+
+        <div class="view-pane hidden" id="chatView">
+          <section class="panel chat-panel">
+            <div class="panel-head">
+              <h2>AI Co-Pilot</h2>
+              <small>Context-aware workspace</small>
+            </div>
+            <div class="chat-log" id="chatLog"></div>
+            <div class="chat-input-row">
+              <input type="text" id="chatInput" placeholder="Ask about your tasks, structure, or next steps...">
+              <button class="btn btn-primary" id="sendChatBtn"><i class="fa-solid fa-paper-plane"></i> Send</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal hidden" id="inspectModal">
+      <div class="modal-sheet">
+        <button class="modal-close" data-close="inspectModal"><i class="fa-solid fa-xmark"></i></button>
+        <h3>Task Inspection</h3>
+        <div id="inspectBody"></div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="deleteModal">
+      <div class="modal-sheet">
+        <h3>Delete Item</h3>
+        <p id="deletePrompt">Remove this item permanently?</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" data-close="deleteModal">Cancel</button>
+          <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focus Mode Confirmation Modal -->
+    <div class="modal hidden" id="focusConfirmModal">
+      <div class="modal-sheet">
+        <h3><i class="fa-solid fa-circle-play"></i> Enter Focus Mode</h3>
+        <p>Ready to eliminate distractions? The app will enter full-screen for deep work. Your timer is set to <strong id="focusMinuteDisplay">25</strong> minutes.</p>
+        <p style="font-size:.85rem;color:var(--text-secondary);margin-top:.5rem">Adjust the timer using the sidebar Focus Clock controls before starting.</p>
+        <div class="modal-actions" style="margin-top:1.5rem">
+          <button class="btn btn-ghost" data-close="focusConfirmModal">Cancel</button>
+          <button class="btn btn-primary" id="confirmFocusBtn"><i class="fa-solid fa-expand"></i> Start Focus Session</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal hidden" id="logoutConfirmModal">
+      <div class="modal-sheet">
+        <h3><i class="fa-solid fa-right-from-bracket"></i> Confirm Logout</h3>
+        <p>Are you sure you want to log out? Any unsaved task changes may be lost.</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" data-close="logoutConfirmModal">Cancel</button>
+          <button class="btn btn-danger" id="confirmLogoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Yes, Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focus Mode Fullscreen Workspace -->
+    <div class="focus-workspace hidden" id="focusWorkspace">
+      <div class="focus-workspace-content">
+        <div class="focus-glow-orb"></div>
+        <div class="focus-clock-container">
+          <svg class="focus-progress-ring" width="280" height="280">
+            <circle class="focus-progress-ring-bg" stroke="rgba(255, 255, 255, 0.05)" stroke-width="8" fill="transparent" r="130" cx="140" cy="140"/>
+            <circle class="focus-progress-ring-fill" id="focusProgressRingFill" stroke="var(--green-bright)" stroke-width="8" stroke-dasharray="816.8" stroke-dashoffset="816.8" stroke-linecap="round" fill="transparent" r="130" cx="140" cy="140"/>
+          </svg>
+          <div class="focus-timer-text">
+            <strong id="focusCountdown">25:00</strong>
+            <span id="focusSessionState">Deep Work</span>
+          </div>
+        </div>
+        
+        <div class="focus-instructions">
+          <p><i class="fa-solid fa-info-circle"></i> Deep work session active. Press <kbd>Esc</kbd> to exit early.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-stack" id="toastStack"></div>
+  </div>
+
+  <!-- Task Builder Modal -->
+  <div class="modal hidden" id="taskBuilderModal">
+    <div class="modal-sheet" style="width:min(580px,100%)">
+      <button class="modal-close" data-close="taskBuilderModal"><i class="fa-solid fa-xmark"></i></button>
+      <div class="panel-head" style="margin-bottom:1.5rem">
+        <h3 style="margin:0"><i class="fa-solid fa-plus"></i> New Task</h3>
+        <button class="btn btn-ghost" id="aiPlanBtn"><i class="fa-solid fa-robot"></i> AI Suggest</button>
+      </div>
+      <div class="task-form" style="display:grid;gap:1rem">
+        <div class="floating-label-group">
+          <input type="text" id="taskTitle" placeholder=" " required>
+          <label for="taskTitle">Task title</label>
+        </div>
+        <div class="floating-label-group">
+          <textarea id="taskNotes" placeholder=" " style="min-height:90px;padding-top:1.5rem"></textarea>
+          <label for="taskNotes" style="top:1.2rem;transform:none">Description / notes</label>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <label style="display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--text-secondary)">
+            Category
+            <select id="taskCategory" style="margin-top:.25rem">
+              <option value="study">📚 Study</option>
+              <option value="work">💼 Work</option>
+              <option value="personal">🌿 Personal</option>
+              <option value="project">🚀 Project</option>
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--text-secondary)">
+            Due Date &amp; Time
+            <input type="datetime-local" id="taskDue" style="margin-top:.25rem">
+          </label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--text-secondary)">
+          Estimated time — <span id="taskCostLabel">30 min</span>
+          <input type="range" id="taskCost" min="10" max="180" step="10" value="30" style="margin-top:.25rem;border:none;background:transparent;padding:0">
+        </label>
+        <div>
+          <p style="font-size:.85rem;font-weight:600;color:var(--text-secondary);margin:0 0 .6rem">Priority</p>
+          <div class="radio-row">
+            <label><input type="radio" name="priority" value="low"> 🟢 Low</label>
+            <label><input type="radio" name="priority" value="medium" checked> 🟡 Medium</label>
+            <label><input type="radio" name="priority" value="high"> 🔴 High</label>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="addTaskBtn" style="margin-top:.5rem"><i class="fa-solid fa-plus"></i> Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Team Member Modal -->
+  <div class="modal hidden" id="addTeamModal">
+    <div class="modal-sheet" style="width:min(520px,100%)">
+      <button class="modal-close" data-close="addTeamModal"><i class="fa-solid fa-xmark"></i></button>
+      <h3 style="margin:0 0 1.5rem"><i class="fa-solid fa-user-plus"></i> Add Team Member</h3>
+      <div style="display:grid;gap:1.25rem">
+        <div class="floating-label-group">
+          <input type="text" id="teamMemberName" placeholder=" " required>
+          <label for="teamMemberName">Full Name</label>
+        </div>
+        <div class="floating-label-group">
+          <input type="text" id="teamMemberRole" placeholder=" " required>
+          <label for="teamMemberRole">Role / Title</label>
+        </div>
+        <div class="floating-label-group">
+          <input type="text" id="teamTaskTitle" placeholder=" " required>
+          <label for="teamTaskTitle">Assigned Task</label>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <label style="display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--text-secondary)">
+            Priority
+            <select id="teamTaskPriority" style="margin-top:.25rem">
+              <option value="low">🟢 Low</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="high">🔴 High</option>
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:600;color:var(--text-secondary)">
+            Due Date
+            <input type="datetime-local" id="teamTaskDue" style="margin-top:.25rem">
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" data-close="addTeamModal">Cancel</button>
+          <button class="btn btn-primary" id="confirmAddTeamBtn"><i class="fa-solid fa-user-plus"></i> Add Member</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
